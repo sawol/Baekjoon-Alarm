@@ -1,0 +1,27 @@
+{
+  "name": "백준 알람(BOJ Alarm)",
+  "description": "채점이 완료되면 알림을 띄워줘요!",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "matches": ["https://www.acmicpc.net/submit/*"],
+      "js": ["flag-change.js"]
+    },
+    {
+      "matches": ["https://www.acmicpc.net/status?*"],
+      "js": ["get-data-script.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "permissions": ["storage", "notifications"], 
+  "icons": {
+    "16": "/icon.png",
+    "32": "/icon.png",
+    "48": "/icon.png",
+    "128": "/icon.png"
+  }
+}

@@ -47,6 +47,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                   );
                 });
               });
+            }
+            if (score.result == 4) {
+              let correctAnswer;
+
+              if ("subtask_score" in score) {
+                correctAnswer = String(score.subtask_score) + "점";
+              } else {
+                correctAnswer = scoringResults[score.result];
+              }
+
+              sendNotification(
+                request.payload.solutionId,
+                correctAnswer,
+                request.payload.problemId + "번",
+              );
             } else {
               sendNotification(
                 request.payload.solutionId,

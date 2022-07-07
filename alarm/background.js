@@ -33,28 +33,44 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     requestBody.push(encodedKey + "=" + encodedValue);
 
     const requestIntervalNotification = setInterval(() => {
-      fetch("https://www.acmicpc.net/status/ajax", {
-        method: "POST",
-        headers: {
-          "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-          "x-requested-with": "XMLHttpRequest",
-        },
-        body: requestBody,
-      }).then((response) => {
+      ConnectAPI(requestBody).then((response) => {
         response.json().then((score) => {
           if (score.result > 3) {
             clearInterval(requestIntervalNotification);
-            sendNotification(
-              request.payload.solutionId,
-              scoringResults[score.result],
-              request.payload.problemId + "번",
-            );
+            if (score.result == 15) {
+              ConnectAPI(requestBody).then((response) => {
+                response.json().then((score) => {
+                  sendNotification(
+                    request.payload.solutionId,
+                    String(score.subtask_score) + "점",
+                    request.payload.problemId + "번",
+                  );
+                });
+              });
+            } else {
+              sendNotification(
+                request.payload.solutionId,
+                scoringResults[score.result],
+                request.payload.problemId + "번",
+              );
+            }
           }
         });
       });
     }, 2000);
   }
 });
+
+function ConnectAPI(requestBody) {
+  return fetch("https://www.acmicpc.net/status/ajax", {
+    method: "POST",
+    headers: {
+      "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "x-requested-with": "XMLHttpRequest",
+    },
+    body: requestBody,
+  });
+}
 
 // 알림을 띄워주는 함수
 function sendNotification(notificationId, scoringResult, problemId) {

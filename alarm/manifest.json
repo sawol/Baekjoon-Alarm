@@ -1,7 +1,7 @@
 {
   "name": "백준 알람(BOJ Alarm)",
   "description": "채점이 완료되면 알림을 띄워줘요!",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 3,
   "content_scripts": [
     {

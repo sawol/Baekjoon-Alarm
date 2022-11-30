@@ -65,7 +65,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             } else {
               sendNotification(
                 request.payload.solutionId,
-                scoringResults[score.result],
+                `${scoringResults[score.result]}(${score.rte_reason})`,
                 request.payload.problemId + "번",
               );
             }

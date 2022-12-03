@@ -11,10 +11,18 @@ chrome.storage.sync.get("isSubmitted", ({ isSubmitted }) => {
     const solutionId = scoreTableRow[0].innerText;
     const problemId = scoreTableRow[2].innerText.trim();
 
-    // service worker에 메시지 전달
-    chrome.runtime.sendMessage({
-      message: "alarm",
-      payload: { solutionId, problemId },
-    });
+    chrome.storage.sync.get(problemId, ( beforeSubmitCount ) => {
+      const submitCount = beforeSubmitCount[problemId] == undefined ? 1 : beforeSubmitCount[problemId] + 1
+
+      obj = {}
+      obj[problemId] = submitCount
+      chrome.storage.sync.set(obj)
+
+      // service worker에 메시지 전달
+      chrome.runtime.sendMessage({
+        message: "alarm",
+        payload: { solutionId, problemId, submitCount },
+      });
+    })
   }
 });

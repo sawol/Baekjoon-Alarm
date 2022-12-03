@@ -43,7 +43,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                   sendNotification(
                     request.payload.solutionId,
                     String(score.subtask_score) + "점",
-                    request.payload.problemId + "번",
+                    request.payload.problemId,
+                    request.payload.submitCount
                   );
                 });
               });
@@ -60,13 +61,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
               sendNotification(
                 request.payload.solutionId,
                 correctAnswer,
-                request.payload.problemId + "번",
+                request.payload.problemId,
+                request.payload.submitCount
               );
             } else {
               sendNotification(
                 request.payload.solutionId,
                 `${scoringResults[score.result]}(${score.rte_reason})`,
-                request.payload.problemId + "번",
+                request.payload.problemId,
+                request.payload.submitCount
               );
             }
           }
@@ -88,14 +91,26 @@ function ConnectAPI(requestBody) {
 }
 
 // 알림을 띄워주는 함수
-function sendNotification(notificationId, scoringResult, problemId) {
+function sendNotification(notificationId, scoringResult, problemId, submitCount) {
   chrome.notifications.create(notificationId, {
     type: "basic",
     title: scoringResult,
     iconUrl: "icon.png",
-    message: problemId,
+    message: problemId + "번 - " + submitCount,
     priority: 2, // -2 to 2 (highest)
 
     eventTime: Date.now(),
+  }, () => {
+    minus(problemId)
   });
+}
+
+function minus(problemId) {
+  chrome.storage.sync.get(problemId, ( beforeSubmitCount ) => {
+    const submitCount = beforeSubmitCount[problemId] - 1
+
+    obj = {}
+    obj[problemId] = submitCount
+    chrome.storage.sync.set(obj)
+  })
 }
